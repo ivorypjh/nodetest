@@ -1,0 +1,33 @@
+# yaml 파일의 이름은 상관 없음
+name: Node.js CI
+
+# push 나 pr 이 오면 branch 는 main
+on: 
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs: 
+  build:
+    runs-on: ubuntu-latest
+
+    # 배열 변수 선언 - python 이나 node 같은 프로그래밍 언어는
+    # 여러 버전에서 동작해야 하므로 배열로 사용
+    strategy:
+      matrix:
+        node-version: [14.x]
+        # [14.x, 12.x] 처럼 배열 형식으로 버전 지정이 가능
+    
+    # 작업 수행
+    # uses 는 다른 곳에서 만든 것을 이용
+    steps:
+      - uses: actions/checkout@v2
+      # 위의 배열을 불러와서 사용
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{matrix.node-version}}
+      # 실행하는 명령을 작성
+      - run: npm install # 파이썬이면 requirements.txt 를 설치
+      - run: npm test
